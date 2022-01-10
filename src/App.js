@@ -7,7 +7,7 @@ class App extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            history: ["2 * 2 = 4", "8 / 2 = 4"],
+            history: [],
             namFir: "",
             namSec: "",
             out: "",
