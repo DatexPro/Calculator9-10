@@ -8,93 +8,73 @@ class App extends React.Component {
         super(props)
         this.state = {
             history: [],
-            namFir: "",
-            namSec: "",
-            out: "",
-            operator: '',
+            value: '',
+            output: '',
         }
-        this.refOutput = React.createRef()
-    }
-
-    tapeNumber(value) {
-        let correntValue = value
-        let output = this.refOutput.current
-        this.setState({
-            out: correntValue,
-        })
-        if (output.value === '0') {
-            output.value = ''
-        }
-        output.value += correntValue
-
-    }
-
-    onChangeValue = event =>{
-        this.setState({value:event.target.value });
+        this.refOut = React.createRef()
+    };
+    onChangeValue = event => {
+        this.setState({value: event.target.value});
     };
     onAddItem = () => {
         this.setState(state => {
-            const history =state.history.concat(state.value);
-
-            return{
+            const history = state.history.concat(state.value);
+            return {
                 history,
-                value:'',
+                value: '',
             }
         });
     };
-    tapeOperation(value) {
-        let output = this.refOutput.current
-        if (value === 'CE') {
-            output.value.length === 1 ? output.value = '0' : output.value = output.value.substring(0, output.value.length - 1)
-        } else if (value === 'C') {
-            output.value = '0'
-        } else if (value === '=') {
+    numberAndOperation(value) {
+        var numValue = value;
+        var outputOperation = this.refOut.current;
+        if (value !== '=') {
+            this.setState({
+                output: numValue,
+            })
+            if (outputOperation.value === '0') {
+                outputOperation.value = '';
+            }
+            outputOperation.value += numValue;
+        } else {
             try {
-                this.setState({value:output.value+'='+eval(output.value)});
-                output.value = eval(output.value)
-                if (output.value === 'Infinity') {
+                this.setState({value: outputOperation.value + '=' + eval(outputOperation.value)});
+                outputOperation.value = eval(outputOperation.value);
+                if (outputOperation.value === 'Infinity') {
                     setTimeout(() => {
-                        output.value = '0'
-                    }, 1000)
+                        outputOperation.value = '0'
+                    }, 1500)
                 }
                 this.onAddItem();
-
-
             } catch {
-                output.value = 'Не допустимое значение'
+                outputOperation.value = 'Не допустимое значение'
                 setTimeout(() => {
-                    output.value = '0'
-                }, 1000)
+                    outputOperation.value = '0'
+                }, 1500)
             }
         }
     }
+
     render() {
         return (
             <div>
-                <div className={"container"}>
-                    <div className={"output"}>
-                        <input ref={this.refOutput} type={"text"} defaultValue={this.state.out}/>
+                <div className={"border"}>
+                    <div className={"out"}>
+                        <input ref={this.refOut} type={"text"} defaultValue={this.state.out}/>
                     </div>
                     <div className={"button"}>
-                        {store.button.map((item, index) => <Button
+                        {store.button.map((element, index) => <Button
                             key={index}
                             onClick={() => {
-                                this.tapeNumber(item.val)
+                                this.numberAndOperation(element.val)
                             }}>
-                            {item.val}</Button>)}
-                        {store.operation.map((item, index) => <Button
-                            key={index}
-                            onClick={() => {
-                                this.tapeOperation(item.val);
-                            }}>
-                            {item.val}
-                        </Button>)}
+                            {element.val}</Button>)}
                     </div>
                 </div>
-                <div>
+                <div className={"border"}>
                     <p align={'center'}>Your calculate:</p>
                     <ul>
-                        {this.state.history.map(item=>(
+                        {this.state.history.map(item => (
                             <li key={item} onChange={this.onChangeValue}> {item} </li>
                         ))}
                     </ul>

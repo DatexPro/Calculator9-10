@@ -1,24 +1,27 @@
-.container{
+.border{
   width: 200px;
   margin-left:auto;
   margin-right: auto;
-  margin-top: 10rem;
+  margin-top: 2rem;
   padding: 10px;
 
   text-align: center;
-  background: coral;
+  background: darkred;
   border: 1px solid black;
+  color: greenyellow;
   border-radius: 5px;
 }
-.output{
+.out{
   margin-bottom: 1rem;
 }
 input{
   background: black;
-  color: coral;
+  color: greenyellow;
   text-align: right;
 }
 button{
   margin: 2px;
   width: 2rem;
+  color: greenyellow;
+
 }
