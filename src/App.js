@@ -1,66 +1,103 @@
-
 import './App.css';
 import store from "./store";
 import Button from '@material-ui/core/Button';
 import React from "react";
 
-
 class App extends React.Component {
-    constructor() {
-        super()
+    constructor(props) {
+        super(props)
         this.state = {
-            out: '0'
+            history: ["2 * 2 = 4", "8 / 2 = 4"],
+            namFir: "",
+            namSec: "",
+            out: "",
+            operator: '',
         }
         this.refOutput = React.createRef()
     }
-    tapeNumber(value){
+
+    tapeNumber(value) {
         let correntValue = value
         let output = this.refOutput.current
         this.setState({
-            out: correntValue
+            out: correntValue,
         })
-        if (output.value==='0'){output.value=''}
-        output.value += correntValue
-    }
-    tapeOperation(value){
-        let output = this.refOutput.current
-        if(value === 'CE'){
-            output.value.length===1 ? output.value='0' : output.value=output.value.substring(0,output.value.length-1)
+        if (output.value === '0') {
+            output.value = ''
         }
-        else if (value === 'C'){output.value='0'}
-        else if (value ==='='){
-            try{output.value=eval(output.value)
-                if (output.value==='Infinity')
-                {setTimeout(()=>{
-                    output.value = '0'
-                }, 1000)}
+        output.value += correntValue
+
+    }
+
+    onChangeValue = event =>{
+        this.setState({value:event.target.value });
+    };
+    onAddItem = () => {
+        this.setState(state => {
+            const history =state.history.concat(state.value);
+
+            return{
+                history,
+                value:'',
             }
-            catch {
-                output.value='Не допустимое значение'
-                setTimeout(()=>{
+        });
+    };
+    tapeOperation(value) {
+        let output = this.refOutput.current
+        if (value === 'CE') {
+            output.value.length === 1 ? output.value = '0' : output.value = output.value.substring(0, output.value.length - 1)
+        } else if (value === 'C') {
+            output.value = '0'
+        } else if (value === '=') {
+            try {
+                this.setState({value:output.value+'='+eval(output.value)});
+                output.value = eval(output.value)
+                if (output.value === 'Infinity') {
+                    setTimeout(() => {
+                        output.value = '0'
+                    }, 1000)
+                }
+                this.onAddItem();
+
+
+            } catch {
+                output.value = 'Не допустимое значение'
+                setTimeout(() => {
                     output.value = '0'
                 }, 1000)
             }
         }
-
     }
     render() {
         return (
-            <div className={"container"}>
-                <div className={"output"}>
-                    <input ref={this.refOutput} type={"text"} defaultValue={this.state.out}/>
+            <div>
+                <div className={"container"}>
+                    <div className={"output"}>
+                        <input ref={this.refOutput} type={"text"} defaultValue={this.state.out}/>
+                    </div>
+                    <div className={"button"}>
+                        {store.button.map((item, index) => <Button
+                            key={index}
+                            onClick={() => {
+                                this.tapeNumber(item.val)
+                            }}>
+                            {item.val}</Button>)}
+                        {store.operation.map((item, index) => <Button
+                            key={index}
+                            onClick={() => {
+                                this.tapeOperation(item.val);
+                            }}>
+                            {item.val}
+                        </Button>)}
+                    </div>
                 </div>
-                <div className={"button"}>
-                    {store.button.map((item,index)=> <Button
-                        key={index}
-                        onClick={() => {this.tapeNumber(item.val)}}>
-                        {item.val}</Button>)}
-                    {store.operation.map((item,index)=><Button
-                        key={index}
-                        onClick={() => {this.tapeOperation(item.val)}}>
-                        {item.val}
-                    </Button>)}
-
+                <div>
+                    <p align={'center'}>Your calculate:</p>
+                    <ul>
+                        {this.state.history.map(item=>(
+                            <li key={item} onChange={this.onChangeValue}> {item} </li>
+                        ))}
+                    </ul>
                 </div>
             </div>
         );
